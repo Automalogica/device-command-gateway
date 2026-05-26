@@ -1,0 +1,36 @@
+[tool.poetry]
+name = "your_app_name"
+version = "1.0.0"
+description = ""
+authors = [""]
+readme = "README.md"
+package-mode = false
+
+[tool.poetry.dependencies]
+python = ">=3.12,<4.0"
+
+
+[tool.poetry.group.dev.dependencies]
+tox = "^4.46.0"
+black = "^26.1.0"
+isort = "^8.0.0"
+flake8 = "^7.3.0"
+mypy = "^1.19.1"
+semgrep = "^1.152.0"
+
+[settings]
+line_length = 79
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.black]
+line-length = 79
+target-version = ['py311']
+
+[tool.coverage.run]
+omit = ["src/tests/*"]
+
+[tool.mypy]
+ignore_missing_imports = true

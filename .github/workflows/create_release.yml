@@ -1,0 +1,74 @@
+name: Create Release
+
+on:
+  pull_request:
+    types:
+      - closed
+    branches:
+      - main
+
+jobs:
+  create-release:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    
+    steps:
+    - name: Code checkout
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.x'
+
+    - name: Extract version from pyproject.toml
+      id: get_version
+      run: |
+        python -B -c "import tomllib
+        with open('pyproject.toml', 'rb') as f:
+            data = tomllib.load(f)
+        version = data['tool']['poetry']['version']
+        print(f'VERSION={version}')" >> $GITHUB_OUTPUT
+
+    - name: Check if tag exists and find available tag
+      id: find_available_tag
+      run: |
+        BASE_TAG="v${{ steps.get_version.outputs.VERSION }}"
+        TAG_NAME="$BASE_TAG"
+        COUNTER=1
+        
+        while true; do
+          if git rev-parse "$TAG_NAME" >/dev/null 2>&1; then
+            echo "Tag $TAG_NAME already exists, trying next..."
+            TAG_NAME="${BASE_TAG}_${COUNTER}"
+            COUNTER=$((COUNTER + 1))
+          else
+            echo "Tag $TAG_NAME available"
+            echo "TAG_NAME=$TAG_NAME" >> $GITHUB_OUTPUT
+            echo "RELEASE_NAME=$TAG_NAME" >> $GITHUB_OUTPUT
+            break
+          fi
+        done
+
+    - name: Create tag
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git tag ${{ steps.find_available_tag.outputs.TAG_NAME }}
+        git push origin ${{ steps.find_available_tag.outputs.TAG_NAME }}
+
+    - name: Create release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+      with:
+        tag_name: ${{ steps.find_available_tag.outputs.TAG_NAME }}
+        release_name: ${{ steps.find_available_tag.outputs.RELEASE_NAME }}
+        draft: false
+        prerelease: false
+        generate_release_notes: true

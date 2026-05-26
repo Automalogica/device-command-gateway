@@ -1,0 +1,44 @@
+name: "\U0001F41B Bug report"
+description: Report a bug and help us improve
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for reporting a problem.
+
+        We track issues and bugs found in the product
+
+        Please fill in the fields below with the information you have
+  - type: input
+    attributes:
+      label: Your full name
+      description: |
+        Enter your full name so we can identify you!
+      validations:
+        required: true
+  - type: input
+    attributes:
+      label: Where was the problem found?
+      description: |
+        production:<client> | dev
+        Mention the client's name if it is Production
+      validations:
+        required: true
+  - type: textarea
+    attributes:
+      label: What steps are necessary to reproduce the bug?
+      description: Describe the steps to reach this result
+  - type: textarea
+    attributes:
+      label: What was the expected behavior?
+      description: Describe what was expected.
+  - type: textarea
+    attributes:
+      label: What visually happens?
+      description: Attach screenshots of the addressed problem.
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Additional information
+      description: Tell us something more about it.
