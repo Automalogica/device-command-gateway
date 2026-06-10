@@ -1,11 +1,12 @@
 from concurrent.futures import ThreadPoolExecutor
 from threading import Lock
+from ...core import settings
 
 
 class ThreadingService:
-    def __init__(self, max_workers=5):
-        self.executor = ThreadPoolExecutor(max_workers=max_workers)
-        self.max_workers = max_workers
+    def __init__(self):
+        self.max_workers = settings.WORKER_POOL_SIZE
+        self.executor = ThreadPoolExecutor(max_workers=self.max_workers)
 
         self.active_tasks = 0
         self.lock = Lock()
