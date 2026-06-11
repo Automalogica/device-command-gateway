@@ -1,2 +1,7 @@
 if __name__ == "__main__":
-    print("This is a template for a Python backend application.")
+    while True:
+    if not threading_service.is_full():
+        command = await crud.poll_pending()
+        if command:
+            threading_service.run(cmd_handler.execute, command)
+    await asyncio.sleep(0.1)  # evita busy-loop
